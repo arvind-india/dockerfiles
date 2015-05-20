@@ -15,7 +15,7 @@ RUN apt-get update
 RUN apt-get install -y mongodb-org-server
 RUN apt-get install -y mongodb-org
 
-mkdir -p /data/db
+RUN mkdir -p /data/db
 
 # Expose port 27017 from the container to the host
 EXPOSE 27017 
