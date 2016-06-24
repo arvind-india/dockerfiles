@@ -1,0 +1,8 @@
+FROM rails:latest
+MAINTAINER Peter Shoukry <pshoukry@pluseg.com>
+
+
+RUN useradd -ms /bin/bash rails
+
+ENV HOME /home/rails
+USER rails 
