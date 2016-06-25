@@ -1,8 +1,13 @@
-FROM rails:latest
+FROM ruby:latest
 MAINTAINER Peter Shoukry <pshoukry@pluseg.com>
 
+RUN apt-get update && apt-get install -y nodejs mysql-client postgresql-client sqlite3 --no-install-recommends && rm -rf /var/lib/apt/lists/*
+
+ENV RAILS_VERSION 4.2.6
+RUN gem install rails --version "$RAILS_VERSION" -V
 
 RUN useradd -ms /bin/bash rails
+RUN chown -R rails:rails /usr/local/bundle
 
 ENV HOME /home/rails
 USER rails 
