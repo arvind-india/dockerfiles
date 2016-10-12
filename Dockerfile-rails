@@ -1,13 +1,25 @@
-FROM ruby:latest
+FROM debian:latest
 MAINTAINER Peter Shoukry <pshoukry@pluseg.com>
 
-RUN apt-get update && apt-get install -y nodejs mysql-client postgresql-client sqlite3 --no-install-recommends && rm -rf /var/lib/apt/lists/*
+# Install packages for building ruby
+RUN apt-get update
+RUN apt-get install -y --force-yes build-essential curl git
+RUN apt-get install -y --force-yes zlib1g-dev libssl-dev libreadline-dev libyaml-dev libxml2-dev libxslt-dev
+RUN apt-get clean
 
-ENV RAILS_VERSION 4.2.6
-RUN gem install rails --version "$RAILS_VERSION" -V
+# Install rbenv and ruby-build
+RUN git clone https://github.com/sstephenson/rbenv.git /root/.rbenv
+RUN git clone https://github.com/sstephenson/ruby-build.git /root/.rbenv/plugins/ruby-build
+RUN /root/.rbenv/plugins/ruby-build/install.sh
+ENV PATH /root/.rbenv/bin:$PATH
+RUN echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
 
-RUN useradd -ms /bin/bash rails
-RUN chown -R rails:rails /usr/local/bundle
+RUN echo 'eval "$(rbenv init -)"' >> /root/.bashrc
 
-ENV HOME /home/rails
-USER rails 
+ENV CONFIGURE_OPTS --disable-install-doc
+RUN rbenv install 2.3.1
+RUN rbenv global 2.3.1
+
+RUN /bin/bash -l -c 'gem install bundler --no-ri --no-rdoc'
+RUN /bin/bash -l -c 'gem install rails -v "~> 5.0"'
+
