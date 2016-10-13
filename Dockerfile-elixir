@@ -47,7 +47,7 @@ RUN apt-get install -y build-essential
 RUN npm install -g brunch
 
 ENV HOME /home/elixir
-USER elixir 
+USER elixir
 RUN yes Y | mix local.hex
 RUN yes Y |mix archive.install https://github.com/phoenixframework/archives/raw/master/phoenix_new.ez
 WORKDIR /usr/src/app

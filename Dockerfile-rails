@@ -4,22 +4,26 @@ MAINTAINER Peter Shoukry <pshoukry@pluseg.com>
 # Install packages for building ruby
 RUN apt-get update
 RUN apt-get install -y --force-yes build-essential curl git
-RUN apt-get install -y --force-yes zlib1g-dev libssl-dev libreadline-dev libyaml-dev libxml2-dev libxslt-dev
+RUN apt-get install -y --force-yes zlib1g-dev libssl-dev libreadline-dev libyaml-dev libxml2-dev libxslt-dev libsqlite3-dev libmysqlclient-dev libpq-dev
 RUN apt-get clean
 
-# Install rbenv and ruby-build
-RUN git clone https://github.com/sstephenson/rbenv.git /root/.rbenv
-RUN git clone https://github.com/sstephenson/ruby-build.git /root/.rbenv/plugins/ruby-build
-RUN /root/.rbenv/plugins/ruby-build/install.sh
-ENV PATH /root/.rbenv/bin:$PATH
-RUN echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
+RUN useradd -ms /bin/bash rails
 
-RUN echo 'eval "$(rbenv init -)"' >> /root/.bashrc
+ENV HOME /home/rails
+ENV BASH_ENV /home/rails/.bashrc
+USER rails
+
+# Install rbenv and ruby-build
+RUN git clone https://github.com/sstephenson/rbenv.git /home/rails/.rbenv
+RUN git clone https://github.com/sstephenson/ruby-build.git /home/rails/.rbenv/plugins/ruby-build
+
+ENV PATH /home/rails/.rbenv/bin:$PATH
+RUN echo export PATH="$HOME/.rbenv/bin:$PATH" >> /home/rails/.bashrc
+RUN echo 'eval "$(rbenv init -)"' >> /home/rails/.bashrc
 
 ENV CONFIGURE_OPTS --disable-install-doc
 RUN rbenv install 2.3.1
 RUN rbenv global 2.3.1
 
-RUN /bin/bash -l -c 'gem install bundler --no-ri --no-rdoc'
-RUN /bin/bash -l -c 'gem install rails -v "~> 5.0"'
-
+RUN eval "$(rbenv init -)" && gem install bundler --no-ri --no-rdoc
+RUN eval "$(rbenv init -)" && gem install rails -v '~> 5.0'
